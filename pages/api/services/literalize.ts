@@ -1,5 +1,7 @@
 export type deep<A> = (A | A[])[];
 
+//A list of literals to be converted
+//Any language can be added
 const literals: Record<
   number,
   { alias: boolean; dec: number; refs: deep<string | null> }
