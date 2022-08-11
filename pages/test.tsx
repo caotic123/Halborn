@@ -4,9 +4,11 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import styles from "../styles/Pages.module.css";
 import {
+  Backdrop,
   Button,
   CardActions,
   CardContent,
+  CircularProgress,
   Stack,
   TextField,
   Typography,
@@ -32,11 +34,13 @@ const Test: NextPage = () => {
     text: "",
     success: false,
   });
+  const [loading, setLoading] = React.useState(false);
   const [literal, setLiteral] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     async function loadNumberLiteral(number: string) {
       try {
+        setLoading(true);
         const converted = await fetch("/api/convert", {
           method: "POST",
           headers: {
@@ -44,7 +48,7 @@ const Test: NextPage = () => {
           },
           body: JSON.stringify({ number: parseInt(number) }),
         });
-
+        setLoading(false);
         const {literal} = await converted.json();
         setLiteral(literal);
       } catch (e) {
@@ -84,6 +88,14 @@ const Test: NextPage = () => {
           {msg.text}
         </Alert>
       </Snackbar>
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: 1000 }}
+        open={loading}
+        onClick={() => setLoading(false)}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
       <Box
         sx={{

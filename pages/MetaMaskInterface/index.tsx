@@ -9,9 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Alert, Button, Snackbar } from "@mui/material";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
-import { BigNumber, ethers, providers } from "ethers";
+import { ethers } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 
 /**
@@ -28,14 +26,11 @@ const useEtherMetaMask = () => {
 
   return {
     connect: async () => {
-      // A Web3Provider wraps a standard Web3 provider, which is
-      // what MetaMask injects as window.ethereum into each page
       const provider = new ethers.providers.Web3Provider(
         (window as Record<string, any>).ethereum
       );
       const { provider: ethereum } = provider;
 
-      // MetaMask requires requesting permission to connect users accounts
       const accounts = await provider.send("eth_requestAccounts", []);
 
       (ethereum as any).on("accountsChanged", (accounts: Array<any>) => {
@@ -65,9 +60,6 @@ const useEtherMetaMask = () => {
     },
     isConnected: signer != null,
     disconnect: () => {
-      const provider = new ethers.providers.Web3Provider(
-        (window as Record<string, any>).ethereum
-      );
       setSigner(null);
     },
   };
@@ -77,7 +69,6 @@ export default function MetaMaskInteface() {
   const { connect, disconnect, isConnected, getBalanceFromAccounts } =
     useEtherMetaMask();
 
-  const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState<
     { address: string; eths: string; code: string }[]
   >([]);
@@ -89,7 +80,7 @@ export default function MetaMaskInteface() {
 
   useEffect(() => {
     connect();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -102,19 +93,11 @@ export default function MetaMaskInteface() {
     }
 
     addDetails();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected]);
 
   return (
     <div className={styles.container}>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: 1000 }}
-        open={loading}
-        onClick={() => setLoading(false)}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-
       <Snackbar
         open={msg.visible}
         autoHideDuration={6000}
